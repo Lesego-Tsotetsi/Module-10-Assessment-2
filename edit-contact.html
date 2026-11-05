@@ -1,0 +1,547 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Contact</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .app-container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .app-header h1 {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        .app-header p {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+        }
+
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .avatar-section img,
+        .avatar-section .avatar-fallback {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(99, 179, 237, 0.5);
+            box-shadow: 0 0 20px rgba(99, 179, 237, 0.2);
+        }
+
+        .avatar-section .avatar-fallback {
+            background: linear-gradient(135deg, #63b3ed, #4299e1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .avatar-name {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 0.75rem;
+            margin-bottom: 0;
+        }
+
+        .avatar-id {
+            color: #718096;
+            font-size: 0.8rem;
+        }
+
+        .form-label {
+            color: #a0aec0;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-label i {
+            color: #63b3ed;
+            margin-right: 6px;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            color: #e2e8f0;
+            padding: 0.65rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.15);
+            color: #e2e8f0;
+        }
+
+        .form-control[readonly] {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.06);
+            color: #a0aec0;
+            cursor: default;
+        }
+
+        .form-control::placeholder { color: #4a5568; }
+
+        .field-group { margin-bottom: 1.2rem; }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px dashed rgba(99, 179, 237, 0.4);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .file-upload-label:hover {
+            background: rgba(99, 179, 237, 0.08);
+            color: #a0aec0;
+        }
+
+        .file-upload-label i { color: #63b3ed; font-size: 1.2rem; }
+        #avatar { display: none; }
+        #fileName { font-size: 0.8rem; color: #63b3ed; margin-top: 0.4rem; min-height: 1rem; }
+
+        .divider {
+            border-color: rgba(255,255,255,0.08);
+            margin: 1.5rem 0;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #63b3ed, #4299e1);
+            border: none;
+            border-radius: 50px;
+            padding: 0.65rem 1.5rem;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-submit:hover { opacity: 0.85; color: #fff; transform: translateY(-1px); }
+
+        .btn-edit {
+            background: rgba(99, 179, 237, 0.15);
+            border: 1px solid rgba(99, 179, 237, 0.3);
+            border-radius: 50px;
+            padding: 0.65rem 1.5rem;
+            color: #63b3ed;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-edit:hover {
+            background: rgba(99, 179, 237, 0.25);
+            color: #90cdf4;
+        }
+
+        .btn-delete {
+            background: rgba(252, 129, 129, 0.1);
+            border: 1px solid rgba(252, 129, 129, 0.3);
+            border-radius: 50px;
+            padding: 0.65rem 1.5rem;
+            color: #fc8181;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: rgba(252, 129, 129, 0.2);
+            color: #feb2b2;
+        }
+
+        .btn-home {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 50px;
+            padding: 0.65rem 1.5rem;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-home:hover { background: rgba(255,255,255,0.07); color: #fff; }
+
+        .edit-mode-badge {
+            display: none;
+            background: rgba(99, 179, 237, 0.15);
+            border: 1px solid rgba(99, 179, 237, 0.3);
+            border-radius: 20px;
+            padding: 0.3rem 0.9rem;
+            color: #63b3ed;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9999; }
+        .toast {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #e2e8f0;
+            backdrop-filter: blur(10px);
+        }
+        .toast.success { border-left: 4px solid #68d391; }
+        .toast.error   { border-left: 4px solid #fc8181; }
+        .toast.warning { border-left: 4px solid #f6ad55; }
+
+        .modal-content {
+            background: #16213e;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            color: #e2e8f0;
+        }
+
+        .modal-header { border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .modal-footer { border-top: 1px solid rgba(255,255,255,0.08); }
+
+        .spinner-border { width: 1rem; height: 1rem; border-width: 2px; }
+    </style>
+</head>
+<body onload="getContact()">
+
+    <!-- Toast -->
+    <div class="toast-container">
+        <div id="toastMsg" class="toast align-items-center" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastText"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>Delete Contact
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Are you sure you want to delete <strong id="deleteName"></strong>? This cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-home" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-delete" id="confirmDelete">
+                        <i class="fa-solid fa-trash me-1"></i>Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+
+        <!-- Header -->
+        <div class="app-header">
+            <h1><i class="fa-solid fa-address-card me-2" style="color:#63b3ed;"></i>Contact Details</h1>
+            <p>View and manage contact information</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+
+            <!-- Avatar Section -->
+            <div class="avatar-section" id="avatarImage">
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-info" role="status"></div>
+                </div>
+            </div>
+
+            <div id="editModeBadge" class="edit-mode-badge">
+                <i class="fa-solid fa-pen me-1"></i> Edit Mode — make your changes below
+            </div>
+
+            <hr class="divider">
+
+            <form id="editForm" novalidate>
+
+                <div class="row g-3">
+                    <div class="col-6 field-group">
+                        <label class="form-label" for="firstname">
+                            <i class="fa-solid fa-user"></i>First Name
+                        </label>
+                        <input type="text" class="form-control" id="firstname" name="firstname" readonly>
+                    </div>
+                    <div class="col-6 field-group">
+                        <label class="form-label" for="lastname">
+                            <i class="fa-solid fa-user"></i>Last Name
+                        </label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" readonly>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="form-label" for="email">
+                        <i class="fa-solid fa-envelope"></i>Email Address
+                    </label>
+                    <input type="email" class="form-control" id="email" name="email" readonly>
+                </div>
+
+                <div class="field-group">
+                    <label class="form-label" for="mobile">
+                        <i class="fa-solid fa-mobile-screen"></i>Mobile Number
+                    </label>
+                    <input type="tel" class="form-control" id="mobile" name="mobile" readonly>
+                </div>
+
+                <!-- Avatar upload — hidden until edit mode -->
+                <div class="field-group" id="avatarUploadGroup" style="display:none;">
+                    <label class="form-label">
+                        <i class="fa-solid fa-image"></i>Change Profile Photo
+                    </label>
+                    <label class="file-upload-label" for="avatar">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span id="uploadText">Click to upload a new photo</span>
+                    </label>
+                    <input type="file" id="avatar" name="avatar" accept="image/*">
+                    <div id="fileName"></div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Save button — hidden until edit mode -->
+                <button type="submit" class="btn btn-submit w-100 mb-3" id="submitForm" style="display:none;">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>Save Changes
+                </button>
+
+            </form>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-home flex-fill" id="homeLink">
+                    <i class="fa-solid fa-arrow-left me-1"></i>Back
+                </button>
+                <button class="btn btn-edit flex-fill" id="editContact">
+                    <i class="fa-solid fa-pen me-1"></i>Edit
+                </button>
+                <button class="btn btn-delete flex-fill" id="deleteContact">
+                    <i class="fa-solid fa-trash me-1"></i>Delete
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="Project Files/config.js"></script>
+    <script>
+
+        // ── Get ID from URL reliably ─────────────────────────────
+        var id = getId();
+
+        function getId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        // ── Event listeners ──────────────────────────────────────
+        document.getElementById("homeLink").addEventListener('click', homeLink);
+        document.getElementById("editContact").addEventListener('click', editContact);
+        document.getElementById("submitForm").addEventListener('click', submitForm);
+        document.getElementById("deleteContact").addEventListener('click', deleteContact);
+        document.getElementById("confirmDelete").addEventListener('click', confirmDeleteContact);
+
+        // ── Avatar file preview ──────────────────────────────────
+        document.getElementById('avatar').addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('uploadText').textContent = 'Photo selected ✓';
+            }
+        });
+
+        // ── Toast helper ─────────────────────────────────────────
+        function showToast(message, type = 'success') {
+            const toastEl = document.getElementById('toastMsg');
+            toastEl.className = `toast align-items-center ${type}`;
+            const icons = {
+                success: 'circle-check text-success',
+                error:   'circle-xmark text-danger',
+                warning: 'triangle-exclamation text-warning'
+            };
+            document.getElementById('toastText').innerHTML =
+                `<i class="fa-solid fa-${icons[type]} me-2"></i>${message}`;
+            new bootstrap.Toast(toastEl, { delay: 3000 }).show();
+        }
+
+        // ── Loading state on save button ─────────────────────────
+        function setLoading(isLoading) {
+            const btn = document.getElementById('submitForm');
+            btn.disabled = isLoading;
+            btn.innerHTML = isLoading
+                ? `<span class="spinner-border me-2" role="status"></span>Saving...`
+                : `<i class="fa-solid fa-floppy-disk me-2"></i>Save Changes`;
+        }
+
+        // ── Fetch contact on page load ───────────────────────────
+        function getContact() {
+            if (!id) {
+                showToast('No contact ID found in URL.', 'error');
+                return;
+            }
+            fetch(rootPath + 'controller/get-contacts/?id=' + id)
+                .then(response => {
+                    if (!response.ok) throw new Error('Server error: ' + response.status);
+                    return response.text();
+                })
+                .then(text => {
+                    if (!text || text.trim() === '') throw new Error('Empty response from server');
+                    return JSON.parse(text);
+                })
+                .then(data => displayOutput(data))
+                .catch(err => showToast('Failed to load contact: ' + err.message, 'error'));
+        }
+
+        // ── Display contact data ─────────────────────────────────
+        function displayOutput(data) {
+            const c = data[0];
+            const initials = (c.firstname?.[0] || '') + (c.lastname?.[0] || '');
+            const avatarSrc = `${rootPath}controller/uploads/${c.avatar}`;
+
+            document.getElementById("avatarImage").innerHTML = `
+                <img src="${avatarSrc}" alt="avatar"
+                     onerror="this.outerHTML='<div class=\\'avatar-fallback\\'>${initials}</div>'"
+                     style="width:90px;height:90px;border-radius:50%;object-fit:cover;
+                            border:3px solid rgba(99,179,237,0.5);">
+                <p class="avatar-name">${c.firstname} ${c.lastname}</p>
+                <p class="avatar-id"><i class="fa-solid fa-id-badge me-1"></i>ID: ${c.id}</p>`;
+
+            document.getElementById('deleteName').textContent = `${c.firstname} ${c.lastname}`;
+
+            document.getElementById("firstname").value = c.firstname;
+            document.getElementById("lastname").value  = c.lastname;
+            document.getElementById("mobile").value    = c.mobile;
+            document.getElementById("email").value     = c.email;
+        }
+
+        // ── Enable edit mode ─────────────────────────────────────
+        function editContact() {
+            ['firstname', 'lastname', 'mobile', 'email'].forEach(fieldId => {
+                document.getElementById(fieldId).readOnly = false;
+            });
+            document.getElementById("avatarUploadGroup").style.display = 'block';
+            document.getElementById("submitForm").style.display = 'block';
+            document.getElementById("editModeBadge").style.display = 'block';
+            document.getElementById("editContact").style.display = 'none';
+        }
+
+        // ── Submit edited contact ────────────────────────────────
+        function submitForm(event) {
+            event.preventDefault();
+            setLoading(true);
+
+            const form = new FormData(document.querySelector("#editForm"));
+            form.append('apiKey', apiKey);
+            form.append('id', id);
+
+            fetch(rootPath + "controller/edit-contact/", {
+                method: 'POST',
+                headers: { 'accept': 'application/json, *.*' },
+                body: form
+            })
+            .then(response => response.text())
+            .then(data => {
+                setLoading(false);
+                if (data == "1") {
+                    showToast('Contact updated successfully!', 'success');
+                    setTimeout(homeLink, 1500);
+                } else {
+                    showToast('Error: ' + data, 'error');
+                }
+            })
+            .catch(() => {
+                setLoading(false);
+                showToast('Network error. Please try again.', 'error');
+            });
+        }
+
+        // ── Delete — show modal ──────────────────────────────────
+        function deleteContact() {
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        // ── Delete — confirmed ───────────────────────────────────
+        function confirmDeleteContact() {
+            const btn = document.getElementById('confirmDelete');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border me-1" role="status"></span>Deleting...`;
+
+            fetch(rootPath + 'controller/delete-contact/?id=' + id)
+                .then(response => response.text())
+                .then(data => {
+                    if (data == "1") {
+                        showToast('Contact deleted.', 'warning');
+                        setTimeout(homeLink, 1200);
+                    } else {
+                        showToast('Error: ' + data, 'error');
+                        btn.disabled = false;
+                        btn.innerHTML = `<i class="fa-solid fa-trash me-1"></i>Delete`;
+                    }
+                })
+                .catch(() => {
+                    showToast('Network error during delete.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa-solid fa-trash me-1"></i>Delete`;
+                });
+        }
+
+        // ── Navigate home ────────────────────────────────────────
+        function homeLink() {
+            window.open("index.html", "_self");
+        }
+
+    </script>
+</body>
+</html>

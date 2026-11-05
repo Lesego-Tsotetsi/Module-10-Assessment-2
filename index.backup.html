@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Contact Book</title>
+    </head>
+    <body onload="fetchContacts()">
+        
+        <div id="table">Contacts loading...</div>
+        <button id="refresh" type="button">Refresh</button>
+        <button id="addContact" type="button">Add Contact</button>
+
+        <!-- Corrected path to config.js (move to correct folder if needed) -->
+        <script src="Project Files/config.js"></script>
+        <script>
+            document.getElementById("refresh").addEventListener('click', fetchContacts);
+            document.getElementById("addContact").addEventListener('click', addContact);
+
+            // JavaScript code to manage contacts
+            function fetchContacts() {
+                fetch(rootPath + "controller/get-contacts/")
+                .then(function(response){
+                    return response.json();
+                })
+                .then(function(data) {
+                     displayOutput(data);
+                    //console.log(data);
+                    // Example: update the table with data
+                    // document.getElementById('table').innerText = JSON.stringify(data);
+                })
+            }
+
+            function displayOutput(data) {
+                let output = "<table>";
+                for(let a in data) {
+                    output += `
+                        <tr onclick="editContact(${data[a].id})" style="cursor: pointer;"> 
+                            <td><img src="${rootPath}controller/uploads/${data[a].avatar}" width="40"/></td>
+                            <td><h5>${data[a].firstname}</h5></td>
+                            <td><h5>${data[a].lastname}</h5></td>
+                        </tr>                      
+                    `;
+                }
+                output += "</table>";
+                document.getElementById('table').innerHTML = output;
+            }
+
+            function addContact() {
+                window.open('add-contact.html', '_self');
+            }
+
+            function editContact(contactId) {
+                window.open('edit-contact.html?id=' + contactId, '_self');
+            }
+            
+        </script>
+    </body>
+</html>

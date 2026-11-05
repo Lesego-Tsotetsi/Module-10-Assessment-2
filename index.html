@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Book</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .app-container {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .app-header h1 {
+            color: #fff;
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .app-header p {
+            color: #a0aec0;
+            font-size: 0.95rem;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-count {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .card-contact {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .contact-row {
+            display: flex;
+            align-items: center;
+            padding: 0.85rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .contact-row:last-child {
+            border-bottom: none;
+        }
+
+        .contact-row:hover {
+            background: rgba(99, 179, 237, 0.1);
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            margin-right: 1rem;
+        }
+
+        .avatar-wrapper img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(99, 179, 237, 0.4);
+        }
+
+        .avatar-fallback {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #63b3ed, #4299e1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            font-size: 1rem;
+            border: 2px solid rgba(99, 179, 237, 0.4);
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-info .name {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .contact-info .sub {
+            color: #718096;
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        .contact-arrow {
+            color: #4a5568;
+            font-size: 0.85rem;
+        }
+
+        .contact-row:hover .contact-arrow {
+            color: #63b3ed;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #718096;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #63b3ed, #4299e1);
+            border: none;
+            border-radius: 50px;
+            padding: 0.55rem 1.4rem;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-add:hover {
+            opacity: 0.85;
+            color: #fff;
+        }
+
+        .btn-refresh {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            color: #a0aec0;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-refresh:hover {
+            background: rgba(255,255,255,0.07);
+            color: #fff;
+        }
+
+        .spinner-border {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    </style>
+</head>
+<body onload="fetchContacts()">
+
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-header">
+            <h1><i class="fa-solid fa-address-book me-2" style="color:#63b3ed;"></i>Contact Book</h1>
+            <p>Manage your contacts in one place</p>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <span class="contact-count" id="contactCount"><i class="fa-solid fa-users me-1"></i>Loading...</span>
+            <div class="d-flex gap-2">
+                <button class="btn-refresh" id="refresh" type="button">
+                    <i class="fa-solid fa-rotate-right me-1"></i>Refresh
+                </button>
+                <button class="btn-add btn" id="addContact" type="button">
+                    <i class="fa-solid fa-plus me-1"></i>Add Contact
+                </button>
+            </div>
+        </div>
+
+        <!-- Contact List -->
+        <div id="table">
+            <div class="card-contact">
+                <div class="empty-state">
+                    <div class="spinner-border text-info" role="status"></div>
+                    <p class="mt-3">Loading contacts...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="Project Files/config.js"></script>
+    <script>
+        document.getElementById("refresh").addEventListener('click', fetchContacts);
+        document.getElementById("addContact").addEventListener('click', addContact);
+
+        function fetchContacts() {
+            document.getElementById('table').innerHTML = `
+                <div class="card-contact">
+                    <div class="empty-state">
+                        <div class="spinner-border text-info" role="status"></div>
+                        <p class="mt-3">Loading contacts...</p>
+                    </div>
+                </div>`;
+
+            fetch(rootPath + "controller/get-contacts/")
+                .then(response => response.json())
+                .then(data => displayOutput(data))
+                .catch(() => {
+                    document.getElementById('table').innerHTML = `
+                        <div class="card-contact">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                                <p>Failed to load contacts.</p>
+                            </div>
+                        </div>`;
+                });
+        }
+
+        function displayOutput(data) {
+            const keys = Object.keys(data);
+            document.getElementById('contactCount').innerHTML =
+                `<i class="fa-solid fa-users me-1"></i>${keys.length} Contact${keys.length !== 1 ? 's' : ''}`;
+
+            if (keys.length === 0) {
+                document.getElementById('table').innerHTML = `
+                    <div class="card-contact">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-user-slash"></i>
+                            <p>No contacts found.<br><small>Click <strong>Add Contact</strong> to get started.</small></p>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            let rows = keys.map(a => {
+                const c = data[a];
+                const initials = (c.firstname?.[0] || '') + (c.lastname?.[0] || '');
+                const avatarHtml = c.avatar
+                    ? `<img src="${rootPath}controller/uploads/${c.avatar}" alt="avatar" onerror="this.parentElement.innerHTML='<div class=\\'avatar-fallback\\'>${initials}</div>'">`
+                    : `<div class="avatar-fallback">${initials}</div>`;
+
+                return `
+                    <div class="contact-row" onclick="editContact(${c.id})">
+                        <div class="avatar-wrapper">${avatarHtml}</div>
+                        <div class="contact-info">
+                            <p class="name">${c.firstname} ${c.lastname}</p>
+                            <p class="sub"><i class="fa-solid fa-id-badge me-1"></i>ID: ${c.id}</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right contact-arrow"></i>
+                    </div>`;
+            }).join('');
+
+            document.getElementById('table').innerHTML = `<div class="card-contact">${rows}</div>`;
+        }
+
+        function addContact() {
+            window.location.href = 'add-contact.html';
+        }
+
+        function editContact(contactId) {
+            window.location.href = 'edit-contact.html?id=' + contactId;
+        }
+    </script>
+</body>
+</html>

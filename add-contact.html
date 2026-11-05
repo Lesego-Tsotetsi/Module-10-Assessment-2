@@ -1,0 +1,385 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Contact</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .app-container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .app-header h1 {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        .app-header p {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+        }
+
+        .form-label {
+            color: #a0aec0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-label i {
+            color: #63b3ed;
+            margin-right: 6px;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            color: #e2e8f0;
+            padding: 0.65rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.15);
+            color: #e2e8f0;
+        }
+
+        .form-control::placeholder {
+            color: #4a5568;
+        }
+
+        /* File input styling */
+        .file-upload-wrapper {
+            position: relative;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px dashed rgba(99, 179, 237, 0.4);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .file-upload-label:hover {
+            background: rgba(99, 179, 237, 0.08);
+            border-color: #63b3ed;
+            color: #a0aec0;
+        }
+
+        .file-upload-label i {
+            font-size: 1.5rem;
+            color: #63b3ed;
+        }
+
+        #avatar {
+            display: none;
+        }
+
+        #fileName {
+            font-size: 0.8rem;
+            color: #63b3ed;
+            margin-top: 0.4rem;
+            min-height: 1rem;
+        }
+
+        /* Avatar preview */
+        #avatarPreview {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(99, 179, 237, 0.5);
+            display: none;
+            margin: 0.5rem auto 0;
+        }
+
+        .divider {
+            border-color: rgba(255,255,255,0.08);
+            margin: 1.5rem 0;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #63b3ed, #4299e1);
+            border: none;
+            border-radius: 50px;
+            padding: 0.7rem 2rem;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            width: 100%;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.88;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-home {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 50px;
+            padding: 0.7rem 2rem;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-home:hover {
+            background: rgba(255,255,255,0.07);
+            color: #fff;
+        }
+
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #e2e8f0;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.success { border-left: 4px solid #68d391; }
+        .toast.error   { border-left: 4px solid #fc8181; }
+
+        /* Loading spinner on button */
+        .btn-submit .spinner-border {
+            width: 1rem;
+            height: 1rem;
+            border-width: 2px;
+        }
+
+        .field-group {
+            margin-bottom: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast -->
+    <div class="toast-container">
+        <div id="toastMsg" class="toast align-items-center" role="alert" aria-live="assertive">
+            <div class="d-flex">
+                <div class="toast-body" id="toastText"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+
+        <!-- Header -->
+        <div class="app-header">
+            <h1><i class="fa-solid fa-user-plus me-2" style="color:#63b3ed;"></i>Add Contact</h1>
+            <p>Fill in the details to create a new contact</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <form id="editForm" novalidate>
+
+                <!-- Name Row -->
+                <div class="row g-3">
+                    <div class="col-6 field-group">
+                        <label class="form-label" for="firstname">
+                            <i class="fa-solid fa-user"></i>First Name
+                        </label>
+                        <input type="text" class="form-control" name="firstname" id="firstname"
+                               placeholder="John" required>
+                    </div>
+                    <div class="col-6 field-group">
+                        <label class="form-label" for="lastname">
+                            <i class="fa-solid fa-user"></i>Last Name
+                        </label>
+                        <input type="text" class="form-control" name="lastname" id="lastname"
+                               placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="field-group">
+                    <label class="form-label" for="email">
+                        <i class="fa-solid fa-envelope"></i>Email Address
+                    </label>
+                    <input type="email" class="form-control" name="email" id="email"
+                           placeholder="john@example.com" required>
+                </div>
+
+                <!-- Mobile -->
+                <div class="field-group">
+                    <label class="form-label" for="mobile">
+                        <i class="fa-solid fa-mobile-screen"></i>Mobile Number
+                    </label>
+                    <input type="tel" class="form-control" name="mobile" id="mobile"
+                           placeholder="+1 234 567 8900" required>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Avatar Upload -->
+                <div class="field-group">
+                    <label class="form-label">
+                        <i class="fa-solid fa-image"></i>Profile Photo
+                    </label>
+                    <div class="file-upload-wrapper">
+                        <label class="file-upload-label" for="avatar">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span id="uploadText">Click to upload a photo</span>
+                        </label>
+                        <input type="file" name="avatar" id="avatar" accept="image/*">
+                        <div id="fileName"></div>
+                        <div class="text-center">
+                            <img id="avatarPreview" src="" alt="Preview">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Buttons -->
+                <button type="submit" class="btn btn-submit mb-3" id="submitForm">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>Save Contact
+                </button>
+                <button type="button" class="btn btn-home" id="homeLink">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Back to Contacts
+                </button>
+
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="Project Files/config.js"></script>
+    <script>
+
+        // ── Avatar preview ──────────────────────────────────────
+        document.getElementById('avatar').addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('uploadText').textContent = 'Photo selected';
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const preview = document.getElementById('avatarPreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // ── Toast helper ────────────────────────────────────────
+        function showToast(message, type = 'success') {
+            const toastEl = document.getElementById('toastMsg');
+            const toastText = document.getElementById('toastText');
+            toastEl.className = `toast align-items-center ${type}`;
+            toastText.innerHTML = type === 'success'
+                ? `<i class="fa-solid fa-circle-check text-success me-2"></i>${message}`
+                : `<i class="fa-solid fa-circle-xmark text-danger me-2"></i>${message}`;
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+        }
+
+        // ── Set button loading state ────────────────────────────
+        function setLoading(isLoading) {
+            const btn = document.getElementById('submitForm');
+            btn.disabled = isLoading;
+            btn.innerHTML = isLoading
+                ? `<span class="spinner-border me-2" role="status"></span>Saving...`
+                : `<i class="fa-solid fa-floppy-disk me-2"></i>Save Contact`;
+        }
+
+        // ── Navigation ──────────────────────────────────────────
+        document.getElementById("homeLink").addEventListener('click', () => {
+            window.open("index.html", "_self");
+        });
+
+        // ── Submit ──────────────────────────────────────────────
+        document.getElementById("submitForm").addEventListener('click', submitForm);
+
+        function submitForm(event) {
+            event.preventDefault();
+
+            const form = new FormData(document.querySelector("#editForm"));
+            form.append('apiKey', apiKey);
+
+            if (!form.get('firstname') || !form.get('lastname') || !form.get('email') || !form.get('mobile')) {
+                showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            setLoading(true);
+
+            fetch(rootPath + "controller/insert-contact/", {
+                method: 'POST',
+                headers: { 'accept': 'application/json, *.*' },
+                body: form
+            })
+            .then(response => response.text())
+            .then(data => {
+                setLoading(false);
+                if (data == "1") {
+                    showToast('Contact added successfully!', 'success');
+                    setTimeout(() => window.open("index.html", "_self"), 1500);
+                } else {
+                    showToast('Error adding contact: ' + data, 'error');
+                }
+            })
+            .catch(() => {
+                setLoading(false);
+                showToast('Network error. Please try again.', 'error');
+            });
+        }
+    </script>
+</body>
+</html>

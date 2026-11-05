@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Contact</title>
+</head>
+<body>
+    <br/>
+    <form id="editForm">
+
+        <label for="firstname">First Name:</label>
+        <input type="text" name="firstname" id="firstname" required><br/>
+
+        <label for="lastname">Last Name:</label>
+        <input type="text" name="lastname" id="lastname" required><br/>
+
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required><br/>
+
+        <label for="mobile">Mobile:</label>
+        <input type="tel" id="mobile" name="mobile" required><br/>
+
+        <label for="avatar">Select a file</label><br/>
+        <input type="file" name="avatar" id="avatar"><br/>
+
+        <button type="submit" id="submitForm">Submit</button>
+    </form>
+    <br/>
+    <button id="homeLink" type="button">Home</button>
+    <script src="config.js"></script>
+    <script>
+        document.getElementById("submitForm").addEventListener('click', submitForm); 
+        document.getElementById("homeLink").addEventListener('click', homeLink);        
+    
+        function submitForm(event) {
+            event.preventDefault(); // Prevent the default form submission
+            // Create a FormData object to send the form data
+
+            const form = new FormData(document.querySelector("#editForm"));
+            form.append('apiKey', apiKey); // Append the API key to the form data
+            if (!form.get('firstname') || !form.get('lastname') || !form.get('email') || !form.get('mobile')) {
+                alert("Please fill in all required fields.");
+                return;
+            }
+
+            fetch(rootPath + "controller/insert-contact/", {
+                method: 'POST',
+                headers: {'accept': 'application/json, *.*'},
+                body: form
+            })
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(data) {
+                if(data=="1") {
+                    alert("Contact added successfully!");
+                    homeLink(); // Redirect to the home page
+                } else {
+                    alert("Error adding contact: " + data);
+                    homeLink();
+                }
+               
+            });
+            function homeLink() {
+                window.open("index.html", "_self"); // Redirect to the home page
+            }
+        }
+    </script>
+</body>
+</html>
